@@ -29,6 +29,29 @@ persistenceList digits@(_ : _ : _) =
   let p = product digits
   in 1 + persistence p
 
+persistenceIO :: Integer -> IO Integer
+persistenceIO input | input <= 10 = return 0
+persistenceIO input =
+  case mDecimalDigitsRev input of
+    Just xs@(_ : _ : _) -> do
+      let p = product xs
+      print p
+      if p <= 9
+        then return 1
+        else do
+          r <- persistenceIO p
+          return (1 + r)
+    _ -> return 0
+
+persistenceListIO :: [Integer] -> IO Integer
+persistenceListIO [] = return 0
+persistenceListIO (_ : []) = return 0
+persistenceListIO digits@(_ : _ : _) = do
+  let p = product digits
+  print p
+  r <- persistenceIO p
+  return (r + 1)
+
 digitGenerator :: Integer -> Int -> [[Integer]]
 digitGenerator d maxDigits = [replicate x d | x <- [0..maxDigits]]
 
@@ -60,12 +83,12 @@ loopList :: [[Integer]] -> IO ()
 loopList [] = print "Ran out of numbers"
 loopList (n : ns) = do
   let p = persistenceList n
-  if p > 11
-    then print (n, p)
+  if p >= 10
+    then print (concat (fmap show n), p)
     else return ()
   loopList ns
 
 main :: IO ()
-main = loopList $ digitNumberGenerator 1000
+main = loopList $ digitNumberGenerator 20
 -- main = print $ length $ digitNumberGenerator 40
 -- main = mapM_ print $ take 1000 $ digitNumberGenerator 3
