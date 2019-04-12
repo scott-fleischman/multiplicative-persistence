@@ -1,0 +1,14 @@
+name: persistence
+version: 0.1.0
+
+dependencies:
+- base
+- digits
+- text
+
+ghc-options:
+- -Wall
+- -O2
+
+executable:
+  main: Main.hs
